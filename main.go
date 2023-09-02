@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -14,9 +15,11 @@ import (
 func main() {
 	flag.Parse()
 	baseDir := flag.Arg(0)
-	pattern := filepath.Join(baseDir, "**", "*.wav")
 	guard := make(chan struct{}, runtime.NumCPU())
-	for _, wav_file := range Must(filepath.Glob(pattern)) {
+	filepath.Walk(baseDir, func(path string, info fs.FileInfo, err error) error {
+		if filepath.Ext(path) != ".wav" {
+			return nil
+		}
 		guard <- struct{}{}
 		go func(wav_file string) {
 			ogg_file := strings.TrimSuffix(wav_file, filepath.Ext(wav_file)) + ".ogg"
@@ -26,8 +29,9 @@ func main() {
 			}
 			os.Remove(wav_file)
 			<-guard
-		}(wav_file)
-	}
+		}(path)
+		return nil
+	})
 }
 
 func Must[T any](obj T, err error) T {
