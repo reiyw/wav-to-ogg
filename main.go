@@ -26,8 +26,9 @@ func main() {
 			err := exec.Command("ffmpeg", "-y", "-i", wav_file, ogg_file).Run()
 			if err != nil {
 				slog.Warn("Could not convert %s", wav_file)
+			} else {
+				os.Remove(wav_file)
 			}
-			os.Remove(wav_file)
 			<-guard
 		}(path)
 		return nil
