@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
@@ -23,6 +24,7 @@ func main() {
 			if err != nil {
 				slog.Warn("Could not convert %s", wav_file)
 			}
+			os.Remove(wav_file)
 			<-guard
 		}(wav_file)
 	}
