@@ -25,7 +25,7 @@ func main() {
 			ogg_file := strings.TrimSuffix(wav_file, filepath.Ext(wav_file)) + ".ogg"
 			err := exec.Command("ffmpeg", "-y", "-i", wav_file, ogg_file).Run()
 			if err != nil {
-				slog.Warn("Could not convert %s", wav_file)
+				slog.Warn("Could not convert", "wav_file", wav_file)
 			} else {
 				os.Remove(wav_file)
 			}
